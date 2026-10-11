@@ -86,6 +86,20 @@ List all chargers (ordered by id; page with `?limit=` and `?after=<last id>`):
 curl -s localhost:8000/chargers
 ```
 
+### Inspect
+
+To look at the tables directly (put any SQL after `-c`):
+
+```bash
+docker compose exec db psql -U postgres telemetry -c '\dt'
+```
+
+To see the latest 20 lines of app logs:
+
+```bash
+docker compose logs --tail 20 app
+```
+
 ### Reset
 
 ```bash
@@ -94,15 +108,3 @@ docker compose down -v
 
 This deletes the database volume. `db/schema.sql` only runs on an empty volume, so this is
 also needed after changing the schema.
-
-To look at the tables directly:
-
-```bash
-docker compose exec db psql -U postgres telemetry
-```
-
-To follow the app logs:
-
-```bash
-docker compose logs -f app
-```
