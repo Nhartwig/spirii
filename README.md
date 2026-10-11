@@ -73,6 +73,12 @@ Read history (newest first, three events, `?limit=` defaults to 50):
 curl -s localhost:8000/chargers/CP-1/events
 ```
 
+List all chargers (ordered by id; page with `?limit=` and `?after=<last id>`):
+
+```bash
+curl -s localhost:8000/chargers
+```
+
 ### Reset
 
 ```bash

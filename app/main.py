@@ -55,6 +55,21 @@ def post_event(envelope: Envelope):
     return {"result": result}
 
 
+@app.get("/chargers", response_model=list[ChargerState])
+def list_chargers(limit: int = Query(50, ge=1, le=500), after: str = ""):
+    # page by passing the last chargePointId as ?after=
+    with get_connection() as conn:
+        return conn.cursor(row_factory=dict_row).execute(
+            """
+            SELECT * FROM charger_state
+            WHERE charge_point_id > %s
+            ORDER BY charge_point_id
+            LIMIT %s
+            """,
+            (after, limit),
+        ).fetchall()
+
+
 @app.get("/chargers/{charge_point_id}", response_model=ChargerState)
 def get_charger(charge_point_id: str):
     with get_connection() as conn:

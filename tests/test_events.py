@@ -169,3 +169,15 @@ def test_history_only_event_type(client, conn, monkeypatch):
     assert response.json() == {"result": "stored"}
     assert count(conn, "events") == 1
     assert count(conn, "charger_state") == 0
+
+
+def test_list_chargers_is_ordered_and_paged(client):
+    for cp in ("CP-2", "CP-1", "CP-3"):
+        client.post("/events", json={**status("m-1", T_1005, "Charging"), "chargePointId": cp})
+
+    def ids(url):
+        return [charger["chargePointId"] for charger in client.get(url).json()]
+
+    assert ids("/chargers") == ["CP-1", "CP-2", "CP-3"]
+    assert ids("/chargers?limit=2") == ["CP-1", "CP-2"]
+    assert ids("/chargers?limit=2&after=CP-2") == ["CP-3"]
