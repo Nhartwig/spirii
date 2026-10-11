@@ -1,0 +1,7 @@
+# Python dependencies, pinned so every build installs the same versions.
+# Pydantic v2 comes with FastAPI. httpx is only needed by FastAPI's TestClient.
+fastapi==0.143.0
+uvicorn==0.54.0
+psycopg[binary]==3.3.6
+pytest==9.1.1
+httpx==0.28.1
