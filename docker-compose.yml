@@ -1,0 +1,35 @@
+# Local stack: Postgres plus the API. In production the database would be a managed
+# service; here it is a container so the whole thing runs with one command.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: telemetry
+    volumes:
+      # Runs once, when the data directory is empty.
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      # Named volume: data survives `docker compose down`. Reset with `down -v`.
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # -h localhost checks over TCP. During first-time init Postgres only listens on a
+      # unix socket, so this stays unhealthy until the schema has been loaded.
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d telemetry"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+    # Not published to the host on purpose (avoids clashing with a local Postgres).
+    # Query it with: docker compose exec db psql -U postgres telemetry
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/telemetry
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
