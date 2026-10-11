@@ -6,6 +6,13 @@ from app.db import get_connection
 from app.main import app
 
 
+@pytest.fixture(scope="session", autouse=True)
+def clean_database_after_tests():
+    yield
+    with get_connection() as conn:
+        conn.execute("TRUNCATE events, charger_state")
+
+
 @pytest.fixture(autouse=True)
 def conn():
     with get_connection() as conn:
