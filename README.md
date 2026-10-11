@@ -5,7 +5,14 @@
 Needs Docker with Compose. Nothing else is installed on the host.
 
 ```bash
-docker compose up --build
+docker compose up --build -d
+```
+
+Check it is up (the first build takes a minute):
+
+```bash
+curl -s localhost:8000/healthz
+# {"status":"ok"}
 ```
 
 The API is on http://localhost:8000 (interactive docs at http://localhost:8000/docs).
@@ -92,4 +99,10 @@ To look at the tables directly:
 
 ```bash
 docker compose exec db psql -U postgres telemetry
+```
+
+To follow the app logs:
+
+```bash
+docker compose logs -f app
 ```
