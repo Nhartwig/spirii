@@ -48,7 +48,7 @@ A worker handles each event in one database transaction: insert into `events` ta
 
 ### History
 
-History lives in the append-only `events` table in Postgres (RDS in production): one row per accepted event, never updated. Payloads are stored as JSON, so a new event type needs no table change. History is the source of truth; the snapshot can be rebuilt or backfilled by replaying it.
+History lives in the append-only `events` table in Postgres (RDS in production): one row per accepted event, never updated. Payloads are stored as JSON, so a new event type needs no table change. History is the source of truth; the latest state can be rebuilt or backfilled by replaying it.
 
 ### Latest state
 
@@ -72,7 +72,7 @@ The json snippet below shows the envelope used by every event, and it has a type
 | Event type | Payload |
 |---|---|
 | `StatusNotification` | Status: `Available`, `Charging`, `Faulted` |
-| `MeterValues` | Power: int >= 0 |
+| `MeterValues` | Power: number >= 0 |
 
 **`events` table:** Where we store event history
 
@@ -130,7 +130,8 @@ We could also have a separate channel to accept developer feedback and criticism
 
 ## Running locally
 
-Needs Docker with Compose. Nothing else is installed on the host.
+Needs Docker with the Compose v2 plugin (`docker compose`, included in Docker Desktop).
+Tested with Docker 29.8 and Compose 5.5. Nothing else is installed on the host.
 
 ```bash
 docker compose up --build -d
